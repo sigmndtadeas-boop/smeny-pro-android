@@ -30,6 +30,9 @@ jobs:
       - name: Apply app fixes and appearance settings
         run: python apply-app-enhancements.py
 
+      - name: Fix employee and position forms
+        run: python apply-form-fixes.py
+
       - name: Install dependencies
         working-directory: smeny_pro_mobile_build
         run: npm install
