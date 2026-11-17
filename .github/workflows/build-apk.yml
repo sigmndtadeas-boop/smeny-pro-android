@@ -33,6 +33,9 @@ jobs:
       - name: Fix employee and position forms
         run: python apply-form-fixes.py
 
+      - name: Move save buttons beside close buttons
+        run: python apply-modal-actions.py
+
       - name: Install dependencies
         working-directory: smeny_pro_mobile_build
         run: npm install
