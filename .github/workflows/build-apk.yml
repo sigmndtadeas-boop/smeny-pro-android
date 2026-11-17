@@ -27,6 +27,9 @@ jobs:
       - name: Apply mobile-first interface
         run: python apply-mobile-ui.py
 
+      - name: Apply app fixes and appearance settings
+        run: python apply-app-enhancements.py
+
       - name: Install dependencies
         working-directory: smeny_pro_mobile_build
         run: npm install
