@@ -29,7 +29,7 @@ new="id?`<button class=\"danger\" type=\"button\" onclick=\"deletePosition('${id
 rep(old,new,"position modal header save")
 
 # Inline position form opened from employee form: same header action row.
-old="toast('Pozice přidána a vybrána. Dokonči a ulož zaměstnance.');});}"
+old="toast('Pozice přidána a vybrána. Dokonči a ulož zaměstnance.');},'',true);}"
 new="toast('Pozice přidána a vybrána. Dokonči a ulož zaměstnance.');},'',true);}"
 rep(old,new,"inline position modal header save")
 
