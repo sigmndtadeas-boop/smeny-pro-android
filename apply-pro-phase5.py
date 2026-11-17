@@ -33,6 +33,7 @@ elif "async function download(content,name,type,isBase64=false)" not in s:
     raise SystemExit("Download helper not found")
 
 s = s.replace("function exportCSV(){", "async function exportCSV(){", 1)
+s = s.replace("function exportXLSX(){", "async function exportXLSX(){", 1)
 s = s.replace(";toast('CSV export připraven.')}", "}", 1)
 s = s.replace("function exportJSON(){download(JSON.stringify(db,null,2),", "async function exportJSON(){await download(JSON.stringify(db,null,2),", 1)
 s = s.replace(";toast('Záloha stažena.')}", "}", 1)
