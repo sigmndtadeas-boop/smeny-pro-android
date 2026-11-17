@@ -63,6 +63,12 @@ jobs:
       - name: Add Android Save As export support
         run: python apply-pro-phase5.py
 
+      - name: Install icon rendering dependency
+        run: python -m pip install cairosvg
+
+      - name: Apply flexible roles, modern UI and app icon
+        run: python apply-pro-phase6.py
+
       - name: Build native export bridge
         working-directory: smeny_pro_mobile_build
         run: npx esbuild export-bridge.js --bundle --platform=browser --format=iife --outfile=www/export-bridge.bundle.js
