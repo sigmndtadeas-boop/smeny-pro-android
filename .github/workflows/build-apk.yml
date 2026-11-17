@@ -39,6 +39,9 @@ jobs:
       - name: Add smarter planning and schedule validation
         run: python apply-pro-phase1.py
 
+      - name: Add shift exchange requests and approval
+        run: python apply-pro-phase2.py
+
       - name: Install dependencies
         working-directory: smeny_pro_mobile_build
         run: npm install
