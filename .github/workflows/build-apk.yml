@@ -24,6 +24,9 @@ jobs:
       - name: Extract project
         run: unzip -o smeny_pro_mobile_build.zip
 
+      - name: Apply mobile-first interface
+        run: python apply-mobile-ui.py
+
       - name: Install dependencies
         working-directory: smeny_pro_mobile_build
         run: npm install
@@ -48,6 +51,14 @@ jobs:
         with:
           name: smeny-pro-debug-apk
           path: smeny_pro_mobile_build/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload patched mobile web source
+        uses: actions/upload-artifact@v4
+        with:
+          name: smeny-pro-mobile-web-source
+          path: smeny_pro_mobile_build/www/
           if-no-files-found: error
           retention-days: 14
 
