@@ -69,6 +69,9 @@ jobs:
       - name: Apply flexible roles, modern UI and app icon
         run: python apply-pro-phase6.py
 
+      - name: Repair employee and shift editors
+        run: python apply-pro-phase6-fix.py
+
       - name: Build native export bridge
         working-directory: smeny_pro_mobile_build
         run: npx esbuild export-bridge.js --bundle --platform=browser --format=iife --outfile=www/export-bridge.bundle.js
