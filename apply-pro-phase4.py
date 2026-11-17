@@ -8,7 +8,7 @@ if '<script src="xlsx.bundle.js"></script>' not in s:
     marker = '<script>'
     if marker not in s:
         raise SystemExit('Main script tag not found')
-    s = s.replace(marker, '<script src="xlsx.bundle.js"></script>\\n' + marker, 1)
+    s = s.replace(marker, '<script src="xlsx.bundle.js"></script>\n' + marker, 1)
 
 # Add Excel actions beside the existing CSV actions.
 if 'onclick="exportXLSX()"' not in s:
@@ -69,7 +69,7 @@ function exportXLSX(){
   toast('Excelová tabulka je připravena ke stažení.');
 }
 """
-    s = s.replace(anchor, fn + '\\n' + anchor, 1)
+    s = s.replace(anchor, fn + '\n' + anchor, 1)
 
 p.write_text(s, encoding='utf-8')
 print('Phase 4 Excel export patch ready.')
