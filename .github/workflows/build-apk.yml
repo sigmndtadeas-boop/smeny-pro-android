@@ -45,9 +45,16 @@ jobs:
       - name: Add monthly workload and absence reports
         run: python apply-pro-phase3.py
 
+      - name: Add formatted Excel export
+        run: python apply-pro-phase4.py
+
       - name: Install dependencies
         working-directory: smeny_pro_mobile_build
-        run: npm install
+        run: npm install xlsx-js-style
+
+      - name: Bundle Excel writer for offline use
+        working-directory: smeny_pro_mobile_build
+        run: cp node_modules/xlsx-js-style/dist/xlsx.bundle.js www/xlsx.bundle.js
 
       - name: Create Android project
         working-directory: smeny_pro_mobile_build
