@@ -50,7 +50,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: smeny_pro_mobile_build
-        run: npm install xlsx-js-style
+        run: npm install xlsx-js-style esbuild
 
       - name: Bundle Excel writer for offline use
         working-directory: smeny_pro_mobile_build
@@ -59,6 +59,13 @@ jobs:
       - name: Create Android project
         working-directory: smeny_pro_mobile_build
         run: npx cap add android
+
+      - name: Add Android Save As export support
+        run: python apply-pro-phase5.py
+
+      - name: Build native export bridge
+        working-directory: smeny_pro_mobile_build
+        run: npx esbuild export-bridge.js --bundle --platform=browser --format=iife --outfile=www/export-bridge.bundle.js
 
       - name: Sync web app
         working-directory: smeny_pro_mobile_build
