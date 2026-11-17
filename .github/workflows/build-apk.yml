@@ -42,6 +42,9 @@ jobs:
       - name: Add shift exchange requests and approval
         run: python apply-pro-phase2.py
 
+      - name: Add monthly workload and absence reports
+        run: python apply-pro-phase3.py
+
       - name: Install dependencies
         working-directory: smeny_pro_mobile_build
         run: npm install
