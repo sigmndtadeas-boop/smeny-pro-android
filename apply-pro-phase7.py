@@ -67,7 +67,7 @@ function generateSchedule(){
  const getRequiredCount=(date,type,weekend)=>{
    const day=new Date(date+'T12:00:00').getDay(),key=day===0?7:day;
    const custom=r.staffingByDay?.[key]?.[type];
-   return custom!==undefined&&custom!==''?Number(custom):Number(type==='D'?r.dayCount:r.nightCount)+(weekend?Number(r.weekendEx||0):Number(r.weekdayEx||0));
+   const roleCount=(r.coverageRules||[]).filter(x=>x.type===type&&(x.days||[]).includes(key)&&Number(x.count)>0).reduce((n,x)=>n+Number(x.count),0);return custom!==undefined&&custom!==''?Number(custom):(roleCount?roleCount:Number(type==='D'?r.dayCount:r.nightCount)+(weekend?Number(r.weekendEx||0):Number(r.weekdayEx||0)));
  };
  const scoreCandidate=(e,type,date,previous)=>{
    const c=counts[e.id],contract=Math.max(1,Number(e.weeklyHours||40));
