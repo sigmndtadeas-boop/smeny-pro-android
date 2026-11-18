@@ -72,7 +72,7 @@ jobs:
       - name: Repair employee and shift editors
         run: python apply-pro-phase6-fix.py
 
-      - name: Build native export bridge
+      - name: Apply constraint-first shift planner\n        run: python apply-pro-phase7.py\n\n      - name: Build native export bridge
         working-directory: smeny_pro_mobile_build
         run: npx esbuild export-bridge.js --bundle --platform=browser --format=iife --outfile=www/export-bridge.bundle.js
 
