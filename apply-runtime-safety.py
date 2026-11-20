@@ -19,15 +19,15 @@ function normalizeSmenyDatabase(){
    id:String(p.id||uid()),name:String(p.name||'Pracovní pozice'),
    color:String(p.color||'#3267e9'),lead:!!p.lead,
    shiftType:p.shiftType==='N'?'N':'D',
-   start:/^d{2}:d{2}$/.test(p.start||'')?p.start:(p.shiftType==='N'?(db.rules.nightStart||'18:00'):(db.rules.dayStart||'06:00')),
-   end:/^d{2}:d{2}$/.test(p.end||'')?p.end:(p.shiftType==='N'?(db.rules.nightEnd||'06:00'):(db.rules.dayEnd||'18:00'))
+   start:/^[0-9]{2}:[0-9]{2}$/.test(p.start||'')?p.start:(p.shiftType==='N'?(db.rules.nightStart||'18:00'):(db.rules.dayStart||'06:00')),
+   end:/^[0-9]{2}:[0-9]{2}$/.test(p.end||'')?p.end:(p.shiftType==='N'?(db.rules.nightEnd||'06:00'):(db.rules.dayEnd||'18:00'))
  }));
  db.absences=array(db.absences).filter(x=>x&&typeof x==='object');
  db.assignments=array(db.assignments).filter(x=>x&&typeof x==='object').map(a=>({...a,
    id:String(a.id||uid()),date:String(a.date||''),type:a.type==='N'?'N':'D',
    employeeId:String(a.employeeId||''),positionId:String(a.positionId||''),
-   start:/^d{2}:d{2}$/.test(a.start||'')?a.start:(a.type==='N'?(db.rules.nightStart||'18:00'):(db.rules.dayStart||'06:00')),
-   end:/^d{2}:d{2}$/.test(a.end||'')?a.end:(a.type==='N'?(db.rules.nightEnd||'06:00'):(db.rules.dayEnd||'18:00'))
+   start:/^[0-9]{2}:[0-9]{2}$/.test(a.start||'')?a.start:(a.type==='N'?(db.rules.nightStart||'18:00'):(db.rules.dayStart||'06:00')),
+   end:/^[0-9]{2}:[0-9]{2}$/.test(a.end||'')?a.end:(a.type==='N'?(db.rules.nightEnd||'06:00'):(db.rules.dayEnd||'18:00'))
  }));
  db.swaps=array(db.swaps).filter(x=>x&&typeof x==='object');
  db.rules=db.rules&&typeof db.rules==='object'?db.rules:{...defaults.rules};
