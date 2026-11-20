@@ -1,4 +1,3 @@
-
 name: Build Směny PRO APK
 
 on:
@@ -78,6 +77,9 @@ jobs:
       - name: Add per-position shift types and working hours
         run: python apply-pro-phase8.py
 
+      - name: Add safe legacy data migration and render recovery
+        run: python apply-runtime-safety.py
+
       - name: Build native export bridge
         working-directory: smeny_pro_mobile_build
         run: npx esbuild export-bridge.js --bundle --platform=browser --format=iife --outfile=www/export-bridge.bundle.js
@@ -85,6 +87,21 @@ jobs:
       - name: Sync web app
         working-directory: smeny_pro_mobile_build
         run: npx cap sync android
+
+      - name: Validate generated JavaScript
+        working-directory: smeny_pro_mobile_build
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html = Path("www/index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script[^>]*>(.*?)</script>", html, re.S | re.I)
+          inline = [x for x in scripts if x.strip()]
+          if not inline:
+              raise SystemExit("No inline application JavaScript found")
+          Path("/tmp/smenypro-inline.js").write_text("\\n".join(inline), encoding="utf-8")
+          PY
+          node --check /tmp/smenypro-inline.js
 
       - name: Build debug APK
         working-directory: smeny_pro_mobile_build
