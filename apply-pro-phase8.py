@@ -14,15 +14,15 @@ replace_function("openPosition","deletePosition",r"""
 function openPosition(id){
  let p=db.positions.find(x=>x.id===id)||{id:'',name:'',color:'#3267e9',lead:false,shiftType:'D'};
  let type=p.shiftType||'D',start=p.start||(type==='N'?db.rules.nightStart:db.rules.dayStart)||'06:00',end=p.end||(type==='N'?db.rules.nightEnd:db.rules.dayEnd)||'14:00';
- showModal(id?'Upravit pozici':'Nová pracovní pozice',\`<form id="posForm" class="formgrid">
- <div class="field full"><label>Název pozice *</label><input name="name" required maxlength="80" value="\${esc(p.name||'')}" placeholder="Např. Řezník"></div>
- <div class="field"><label>Barva</label><input name="color" type="color" value="\${p.color||'#3267e9'}"></div>
- <div class="field"><label class="checkrow"><input type="checkbox" name="lead" \${p.lead?'checked':''}> Pozice vedoucího směny</label></div>
- <div class="field full"><label>Typ směny</label><select name="shiftType"><option value="D" \${type==='D'?'selected':''}>Denní</option><option value="N" \${type==='N'?'selected':''}>Noční</option></select></div>
- <div class="field"><label>Začátek práce</label><input name="start" type="time" required value="\${start}"></div>
- <div class="field"><label>Konec práce</label><input name="end" type="time" required value="\${end}"></div>
+ showModal(id?'Upravit pozici':'Nová pracovní pozice',`<form id="posForm" class="formgrid">
+ <div class="field full"><label>Název pozice *</label><input name="name" required maxlength="80" value="${esc(p.name||'')}" placeholder="Např. Řezník"></div>
+ <div class="field"><label>Barva</label><input name="color" type="color" value="${p.color||'#3267e9'}"></div>
+ <div class="field"><label class="checkrow"><input type="checkbox" name="lead" ${p.lead?'checked':''}> Pozice vedoucího směny</label></div>
+ <div class="field full"><label>Typ směny</label><select name="shiftType"><option value="D" ${type==='D'?'selected':''}>Denní</option><option value="N" ${type==='N'?'selected':''}>Noční</option></select></div>
+ <div class="field"><label>Začátek práce</label><input name="start" type="time" required value="${start}"></div>
+ <div class="field"><label>Konec práce</label><input name="end" type="time" required value="${end}"></div>
  <div class="field full muted small">Pokud konec vychází na dřívější čas než začátek, směna pokračuje do následujícího dne.</div>
- </form>\`,()=>{
+ </form>`,()=>{
    let f=$('#posForm');if(!f||!f.checkValidity()){f?.reportValidity();return}
    let val=n=>f.querySelector('[name="'+n+'"]')?.value??'';
    let x={...p,id:p.id||uid(),name:val('name').trim(),color:val('color')||'#3267e9',lead:!!f.querySelector('[name="lead"]').checked,shiftType:val('shiftType'),start:val('start'),end:val('end')};
@@ -32,7 +32,7 @@ function openPosition(id){
    if(i>=0)db.positions[i]=x;else db.positions.push(x);
    if(!save()){if(i>=0)db.positions[i]=old;else db.positions.pop();return}
    closeModal();render('positions');toast('Pozice a pracovní doba byly uloženy.');
- },id?\`<button class="danger" type="button" onclick="deletePosition('\${id}')">Smazat</button>\`:'',true);
+ },id?`<button class="danger" type="button" onclick="deletePosition('${id}')">Smazat</button>`:'',true);
 }
 """)
 
@@ -43,15 +43,15 @@ function openPositionFromEmployee(){
  let checked=n=>!!f.querySelector('[name="'+n+'"]')?.checked;
  let existing=db.employees.find(x=>x.name===val('name')),employeeId=existing?.id||'';
  let draft={id:employeeId,name:val('name'),email:val('email'),phone:val('phone'),weeklyHours:+val('weeklyHours')||40,maxConsecutive:+val('maxConsecutive')||db.rules.maxConsecutive,maxHours:+val('maxHours')||0,positions:[...f.querySelectorAll('[name="positions"]:checked')].map(i=>i.value),onlyDay:checked('onlyDay'),onlyNight:checked('onlyNight'),weekdays:checked('weekdays'),isLead:checked('isLead'),active:checked('active'),notes:val('notes')};
- showModal('Přidat pracovní pozici',\`<form id="inlinePosForm" class="formgrid">
+ showModal('Přidat pracovní pozici',`<form id="inlinePosForm" class="formgrid">
  <div class="field full"><label>Název pozice *</label><input name="name" required placeholder="Např. Vedoucí směny"></div>
  <div class="field"><label>Barva</label><input name="color" type="color" value="#3267e9"></div>
  <div class="field"><label class="checkrow"><input type="checkbox" name="lead"> Pozice vedoucího směny</label></div>
  <div class="field full"><label>Typ směny</label><select name="shiftType"><option value="D" selected>Denní</option><option value="N">Noční</option></select></div>
- <div class="field"><label>Začátek práce</label><input name="start" type="time" required value="\${db.rules.dayStart||'06:00'}"></div>
- <div class="field"><label>Konec práce</label><input name="end" type="time" required value="\${db.rules.dayEnd||'14:00'}"></div>
+ <div class="field"><label>Začátek práce</label><input name="start" type="time" required value="${db.rules.dayStart||'06:00'}"></div>
+ <div class="field"><label>Konec práce</label><input name="end" type="time" required value="${db.rules.dayEnd||'14:00'}"></div>
  <div class="field full muted small">Noční směna může končit následující den.</div>
- </form>\`,()=>{
+ </form>`,()=>{
    let pf=$('#inlinePosForm');if(!pf||!pf.checkValidity()){pf?.reportValidity();return}
    let get=n=>pf.querySelector('[name="'+n+'"]')?.value??'';
    let name=get('name').trim();if(!name){toast('Zadej název pozice.');return}
