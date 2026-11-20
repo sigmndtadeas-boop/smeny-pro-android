@@ -75,6 +75,9 @@ jobs:
       - name: Apply constraint-first shift planner
         run: python apply-pro-phase7.py
 
+      - name: Add per-position shift types and working hours
+        run: python apply-pro-phase8.py
+
       - name: Build native export bridge
         working-directory: smeny_pro_mobile_build
         run: npx esbuild export-bridge.js --bundle --platform=browser --format=iife --outfile=www/export-bridge.bundle.js
