@@ -86,5 +86,8 @@ new="start:slotTarget.start,end:slotTarget.end,locked:false};"
 if old in s:s=s.replace(old,new,1)
 elif "start:slotTarget.start,end:slotTarget.end" not in s:raise SystemExit("Planner assignment time anchor not found.")
 
+# The position defines its shift type, so do not offer a conflicting type selector here.
+s=s.replace('<div class="coverage-form"><div class="field"><label>Typ směny</label><select id="coverageType"><option value="D">Denní</option><option value="N">Noční</option></select></div><div class="field"><label>Požadovaná role</label>','<div class="coverage-form"><div class="field"><label>Požadovaná role</label>')
+s=s.replace("(r.type==='D'?'Denní':'Noční')","((db.positions.find(p=>p.id===r.positionId)?.shiftType||r.type)==='D'?'Denní':'Noční')")
 p.write_text(s,encoding="utf-8")
 print("Phase 8: per-position shift type and working hours applied to both position creation flows and the planner.")
