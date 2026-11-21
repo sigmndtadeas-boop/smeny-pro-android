@@ -80,6 +80,9 @@ jobs:
       - name: Add safe legacy data migration and render recovery
         run: python apply-runtime-safety.py
 
+      - name: Protect data-changing operations
+        run: python apply-data-safety.py
+
       - name: Build native export bridge
         working-directory: smeny_pro_mobile_build
         run: npx esbuild export-bridge.js --bundle --platform=browser --format=iife --outfile=www/export-bridge.bundle.js
