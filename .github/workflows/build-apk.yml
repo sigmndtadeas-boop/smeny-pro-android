@@ -35,8 +35,8 @@ jobs:
       - name: Move save buttons beside close buttons
         run: python apply-modal-actions.py
 
-      - name: Move all modal confirmation buttons to the top
-        run: python apply-modal-actions-top.py
+      - name: Apply verified modal action and import/export confirmation fix
+        run: python apply-modal-actions-v2.py
 
       - name: Add smarter planning and schedule validation
         run: python apply-pro-phase1.py
@@ -89,11 +89,19 @@ jobs:
       - name: Upgrade planner with staged constraint solver
         run: python apply-pro-phase9.py
 
-      - name: Check planner regression safeguards
-        run: python test-planner-regressions.py
+      - name: Run full regression suite (pass 1 of 2)
+        run: |
+          python test-planner-regressions.py
+          node test-planner-runtime.js
+          python test-modal-actions.py
+          node test-modal-actions-runtime.js
 
-      - name: Run planner behavior tests
-        run: node test-planner-runtime.js
+      - name: Run full regression suite (pass 2 of 2)
+        run: |
+          python test-planner-regressions.py
+          node test-planner-runtime.js
+          python test-modal-actions.py
+          node test-modal-actions-runtime.js
 
       - name: Refresh compact mobile calendar
         run: python apply-calendar-ui.py
