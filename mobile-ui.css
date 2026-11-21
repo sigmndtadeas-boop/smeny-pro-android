@@ -30,3 +30,59 @@ body:has(.modalback.show) .mobile-more,
 body:has(.modalback[aria-hidden="false"]) .mobile-more{display:none!important}
 }
 @media(min-width:701px){.mobile-nav,.mobile-more{display:none!important}}
+
+
+/* ROSTERA – Modern PRO visual identity (mobile-first, presentation only) */
+@media(max-width:700px){
+  :root{
+    --line:#26364b;
+    --text:#e8eef7;
+    --muted:#91a2b8;
+    --primary:#38c9b5;
+    --accent:#38c9b5;
+  }
+  body{background:#0b1220!important;color:#e8eef7!important;color-scheme:dark}
+  .sidebar{background:linear-gradient(135deg,#101e32 0%,#0d1728 100%)!important;border-bottom:1px solid #26364b}
+  .brand strong{font-size:0!important;letter-spacing:.12em;color:#f4f8ff}
+  .brand strong:after{content:"ROSTERA";font-size:16px;font-weight:850;letter-spacing:.14em;color:#f4f8ff}
+  .brand small{color:#8fa8bc!important;letter-spacing:.06em}
+  .logo{background:linear-gradient(145deg,#38c9b5,#237d91)!important;box-shadow:0 5px 18px #38c9b533}
+  .topbar{background:#101b2d!important;border-bottom:1px solid #26364b;color:#e8eef7}
+  .crumb,.topbar .sub{color:#a8b8cb!important}
+  .content{background:#0b1220!important;color:#e8eef7!important}
+  .pagehead h1,.cardhead h2,.card h2,.stat .value{color:#f1f6fc!important}
+  .sub,.stat .label,.stat .hint,.muted,.hint{color:#91a2b8!important}
+  .card,.stat,.panel,.empty,.tablewrap{
+    background:#121f32!important;color:#e8eef7!important;
+    border:1px solid #263a50!important;box-shadow:0 8px 24px #03091455!important;
+  }
+  .card{border-radius:16px!important}
+  .stat{border-radius:14px!important}
+  button,.btn{
+    border-radius:11px!important;transition:background .15s ease,border-color .15s ease;
+  }
+  .actions button,.btn-primary,button.primary{
+    background:linear-gradient(135deg,#31bfae,#238c9a)!important;
+    border:1px solid #43d7c4!important;color:#071b22!important;font-weight:750!important;
+    box-shadow:0 5px 16px #25b6a633!important;
+  }
+  .mobile-nav{
+    background:#101b2d!important;border-top:1px solid #2a3b51!important;
+    box-shadow:0 -8px 26px #02081299!important;
+  }
+  .mobile-nav button{color:#91a2b8!important}
+  .mobile-nav button.active{background:#173b45!important;color:#59dfcd!important}
+  .mobile-more{background:#132238!important;border-color:#30445d!important}
+  input,select,textarea,.field input,.field select,.field textarea{
+    background:#0e1a2b!important;color:#e8eef7!important;border:1px solid #344a63!important;
+    border-radius:11px!important;
+  }
+  input::placeholder,textarea::placeholder{color:#71849c!important}
+  .tablewrap table,.tablewrap th,.tablewrap td{color:#e2eaf4!important}
+  th{background:#1a2b41!important}
+  td{border-color:#293d55!important}
+  .modal{background:#122036!important;color:#e8eef7!important;border:1px solid #30445d!important}
+  .modalhead,.modalfoot{background:#14243a!important;border-color:#30445d!important;color:#e8eef7!important}
+  .modalbody{color:#e8eef7!important}
+  .toast{background:#173b45!important;color:#eafffb!important;border:1px solid #38c9b5!important}
+}
