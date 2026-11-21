@@ -83,6 +83,9 @@ jobs:
       - name: Protect data-changing operations
         run: python apply-data-safety.py
 
+      - name: Refresh compact mobile calendar
+        run: python apply-calendar-ui.py
+
       - name: Build native export bridge
         working-directory: smeny_pro_mobile_build
         run: npx esbuild export-bridge.js --bundle --platform=browser --format=iife --outfile=www/export-bridge.bundle.js
