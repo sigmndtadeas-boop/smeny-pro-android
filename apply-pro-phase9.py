@@ -169,24 +169,41 @@ function generateSchedule(){
    const candidates=daySlots.map(slot=>({slot,list:employees.filter(e=>eligible(e,resolveSlot(e,slot,date),date,[]))}));
    candidates.sort((a,b)=>a.list.length-b.list.length);
    let nodes=0,solution=null;const chosen=[];
+   const makeAssignment=candidate=>{
+     const e=candidate.e,slot=candidate.slot;
+     return {id:uid(),date,type:slot.target.type,employeeId:e.id,positionId:slot.positionId||e.positions?.[0]||work.positions.find(p=>!p.lead)?.id||work.positions[0]?.id,start:slot.target.start,end:slot.target.end,locked:false};
+   };
+   const rankedFor=(item,assigned)=>item.list.map(e=>({e,slot:resolveSlot(e,item.slot,date)})).filter(x=>eligible(x.e,x.slot,date,assigned)).sort((a,b)=>score(a.e,a.slot.shiftType,date)-score(b.e,b.slot.shiftType,date)||a.e.name.localeCompare(b.e.name,'cs'));
    const solve=depth=>{
      if(depth===candidates.length){solution=chosen.slice();return true}
      if(++nodes>60000)return false;
-     const item=candidates[depth],ranked=item.list.map(e=>({e,slot:resolveSlot(e,item.slot,date)})).filter(x=>eligible(x.e,x.slot,date,chosen)).sort((a,b)=>score(a.e,a.slot.shiftType,date)-score(b.e,b.slot.shiftType,date)||a.e.name.localeCompare(b.e.name,'cs'));
+     const ranked=rankedFor(candidates[depth],chosen);
      for(const candidate of ranked){
-       const e=candidate.e,slot=candidate.slot,assignment={id:uid(),date,type:slot.target.type,employeeId:e.id,positionId:slot.positionId||e.positions?.[0]||work.positions.find(p=>!p.lead)?.id||work.positions[0]?.id,start:slot.target.start,end:slot.target.end,locked:false};
-       chosen.push(assignment);
+       chosen.push(makeAssignment(candidate));
        if(solve(depth+1))return true;
        chosen.pop();
      }
      return false;
    };
-   if(!solve(0)){
-     issues.push(fmt(date)+' · Nelze kompletně obsadit všechny denní a noční pozice současně. Prověř dostupnost, kvalifikace, odpočinek, absence a limity.');
-     continue;
+   const complete=solve(0);
+   if(!complete){
+     // A usable draft is better than discarding every assignment for this date.
+     // Keep the scarcest slots first and fill every remaining compatible slot.
+     const partial=[];
+     for(const item of candidates){
+       const ranked=rankedFor(item,partial);
+       if(ranked.length)partial.push(makeAssignment(ranked[0]));
+     }
+     if(partial.length){
+       solution=partial;
+       issues.push(fmt(date)+' · Částečné obsazení: chybí '+(candidates.length-partial.length)+' z '+candidates.length+' míst. Zkontroluj dostupnost, kvalifikace, odpočinek, absence a limity.');
+     }else{
+       issues.push(fmt(date)+' · Nelze obsadit žádnou pozici. Prověř dostupnost, kvalifikace, odpočinek, absence a limity.');
+       continue;
+     }
    }
    for(const a of solution){work.assignments.push(a);hours[a.employeeId]+=duration(a.start,a.end);const t=totals[a.employeeId];t.all++;if(a.type==='N')t.night++;if([0,6].includes(d.getDay()))t.weekend++;created++}
-   completeDays++;
+   if(complete)completeDays++;
  }
  // Check rest against already planned shifts after the target month.
  const endDate=iso(new Date(year,month+1,0));
