@@ -15,12 +15,12 @@ def replace_once(old, new, label):
 if "plannerAllowPartial" not in s:
     s = s.replace(
         "plannerStrategy:'balanced',excludePairs:[]",
-        "plannerStrategy:'balanced',plannerAllowPartial:false,excludePairs:[]",
+        "plannerStrategy:'balanced',plannerAllowPartial:true,excludePairs:[]",
         1
     )
     s = s.replace(
         "db.rules.plannerStrategy=db.rules.plannerStrategy||'balanced';",
-        "db.rules.plannerStrategy=db.rules.plannerStrategy||'balanced';db.rules.plannerAllowPartial=!!db.rules.plannerAllowPartial;",
+        "db.rules.plannerStrategy=db.rules.plannerStrategy||'balanced';if(db.rules.plannerAllowPartial===undefined)db.rules.plannerAllowPartial=true;else db.rules.plannerAllowPartial=!!db.rules.plannerAllowPartial;",
         1
     )
 
@@ -196,6 +196,13 @@ function generateSchedule(){
    if(next&&plannerRestHours(a,next)<Number(r.minRest||0))issues.push(fmt(a.date)+' · '+(employeeMap.get(a.employeeId)?.name||'Zaměstnanec')+': po poslední směně měsíce není dodržen odpočinek před další směnou.');
  }
  const missing=issues.length>0,allowPartial=!!r.plannerAllowPartial;
+ if(missing&&created===0){
+   db=before;
+   showModal('Rozpis se nepodařilo sestavit',
+    '<div class="notice">Nepodařilo se vytvořit žádnou novou směnu. Původní rozpis zůstal zachován.</div><div style="max-height:45vh;overflow:auto">'+issues.slice(0,100).map(x=>'<div style="padding:8px 2px;border-bottom:1px solid var(--line);font-size:12px">'+esc(x)+'</div>').join('')+'</div>',
+    null,'<button class="primary" onclick="closeModal()">Zavřít</button>');
+   return;
+ }
  if(missing&&!allowPartial){
    window.__smenyPendingPlan=null;window.__smenyBeforePlan=null;db=before;
    showModal('Rozpis nebyl uložen – nalezeny problémy',
