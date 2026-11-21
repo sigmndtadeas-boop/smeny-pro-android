@@ -35,9 +35,6 @@ jobs:
       - name: Move save buttons beside close buttons
         run: python apply-modal-actions.py
 
-      - name: Apply verified modal action and import/export confirmation fix
-        run: python apply-modal-actions-v2.py
-
       - name: Add smarter planning and schedule validation
         run: python apply-pro-phase1.py
 
@@ -88,6 +85,9 @@ jobs:
 
       - name: Upgrade planner with staged constraint solver
         run: python apply-pro-phase9.py
+
+      - name: Apply verified modal action and import/export confirmation fix
+        run: python apply-modal-actions-v2.py
 
       - name: Run full regression suite (pass 1 of 2)
         run: |
