@@ -8,8 +8,6 @@ if marker in s:
     print("Modal action v2 already applied.")
     raise SystemExit(0)
 
-# The original page has a single shared showModal function. Put every action
-# button in its header, rather than relying on a footer's visual positioning.
 pattern = re.compile(r"function showModal\(title,body,onSave,extra='',headerActions=false\)\{.*?\}function closeModal\(\)")
 replacement = r'''function showModal(title,body,onSave,extra='',headerActions=false,saveLabel='Uložit'){
  $('#modalTitle').textContent=title;
@@ -30,7 +28,6 @@ s, n = pattern.subn(lambda _: replacement, s, count=1)
 if n != 1:
     raise SystemExit(f"Expected to replace exactly one showModal function, replaced {n}.")
 
-# Add a deliberate confirmation step before every export from the reports page.
 s = s.replace("function exportXLSX(){", "function exportXLSXNow(){", 1)
 s = s.replace("function exportCSV(){", "function exportCSVNow(){", 1)
 export_pattern = re.compile(r"async function exportJSON\(\)\{.*?\}function importJSON\(\)", re.S)
@@ -41,8 +38,6 @@ if n != 1:
 if "function confirmExport(format,action,saveLabel)" not in s:
     raise SystemExit("Could not add export confirmation flow.")
 
-# Import now previews the selected file and waits for explicit confirmation
-# before replacing the current local database.
 import_pattern = re.compile(r"function importJSON\(\)\{.*?\}function resetData\(\)", re.S)
 import_replacement = r'''function importJSON(){
  let inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';
