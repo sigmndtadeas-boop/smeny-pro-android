@@ -124,6 +124,30 @@ jobs:
       - name: Refresh compact mobile calendar
         run: python apply-calendar-ui.py
 
+      - name: Apply complete ROSTERA settings center
+        run: python apply-rostera-settings.py
+
+      - name: Verify all ROSTERA settings sections
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html = Path("smeny_pro_mobile_build/www/index.html").read_text(encoding="utf-8")
+          required = [
+              'data-page="settings"', 'function settingsPage()',
+              '1. Pracoviště a firma', '2. Výchozí směny',
+              '3. Pravidla plánování', '4. Zaměstnanci a role',
+              '5. Personální obsazení', '6. Upozornění v aplikaci',
+              '7. Absence a svátky', '8. Zálohování a data',
+              '9. Vzhled', '10. Systém a zabezpečení',
+              'function restoreBackup()', 'function setPin()',
+              'function saveAbs()'
+          ]
+          missing = [item for item in required if item not in html]
+          if missing:
+              raise SystemExit("ROSTERA settings verification failed: " + ", ".join(missing))
+          print("Verified all 10 ROSTERA settings areas and core handlers.")
+          PY
+
       - name: Build native export bridge
         working-directory: smeny_pro_mobile_build
         run: npx esbuild export-bridge.js --bundle --platform=browser --format=iife --outfile=www/export-bridge.bundle.js
