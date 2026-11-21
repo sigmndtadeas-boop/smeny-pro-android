@@ -89,6 +89,9 @@ jobs:
       - name: Check planner regression safeguards
         run: python test-planner-regressions.py
 
+      - name: Run planner behavior tests
+        run: node test-planner-runtime.js
+
       - name: Refresh compact mobile calendar
         run: python apply-calendar-ui.py
 
