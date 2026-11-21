@@ -35,6 +35,9 @@ jobs:
       - name: Move save buttons beside close buttons
         run: python apply-modal-actions.py
 
+      - name: Move all modal confirmation buttons to the top
+        run: python apply-modal-actions-top.py
+
       - name: Add smarter planning and schedule validation
         run: python apply-pro-phase1.py
 
