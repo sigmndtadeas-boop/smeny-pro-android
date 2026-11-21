@@ -3,7 +3,7 @@ const vm = require('vm');
 
 const html = fs.readFileSync('smeny_pro_mobile_build/www/index.html', 'utf8');
 const start = html.indexOf('function plannerMinutes(t)');
-const end = html.indexOf('\n\nasync function exportXLSX()', start);
+const end = html.indexOf('\n\nasync function exportXLSXNow()', start);
 if (start < 0 || end < 0) throw new Error('Cannot isolate planner functions');
 const plannerCode = html.slice(start, end);
 
