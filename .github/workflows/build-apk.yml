@@ -59,6 +59,9 @@ jobs:
         working-directory: smeny_pro_mobile_build
         run: npx cap add android
 
+      - name: Apply ROSTERA app name and launcher branding
+        run: python apply-rostera-branding.py
+
       - name: Configure app version (temporary debug signing)
         run: |
           python - <<'PY'
