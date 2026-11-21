@@ -15,5 +15,18 @@ button{min-height:40px;padding:10px 12px;border-radius:10px}.stats{grid-template
 .mobile-nav{position:fixed;z-index:30;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:7px 5px calc(7px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid #e5e9f1;box-shadow:0 -5px 22px #17203312}
 .mobile-nav button{background:transparent;color:#7a8498;border-radius:10px;min-width:0;min-height:52px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;font-weight:650;white-space:nowrap}.mobile-nav button .ico{font-size:19px;line-height:1.2}.mobile-nav button.active{background:#eaf0ff;color:#285bd3}
 .mobile-more{position:fixed;z-index:29;left:10px;right:10px;bottom:calc(75px + env(safe-area-inset-bottom));max-height:calc(100dvh - 105px - env(safe-area-inset-bottom));overflow-y:auto;background:#fff;border:1px solid var(--line);border-radius:15px;padding:10px;box-shadow:0 12px 40px #17203330;display:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.mobile-more.show{display:grid}.mobile-more button{min-height:56px;font-size:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.mobile-more button span{font-size:18px}.tabs{overflow-x:auto}.tabs button{white-space:nowrap}
+/* Hide fixed mobile navigation whenever any modal/dialog is open. */
+body:has(.modalback[style*="display: flex"]) .mobile-nav,
+body:has(.modalback[style*="display:flex"]) .mobile-nav,
+body:has(.modalback[style*="display: grid"]) .mobile-nav,
+body:has(.modalback[style*="display:grid"]) .mobile-nav,
+body:has(.modalback.show) .mobile-nav,
+body:has(.modalback[aria-hidden="false"]) .mobile-nav{display:none!important}
+body:has(.modalback[style*="display: flex"]) .mobile-more,
+body:has(.modalback[style*="display:flex"]) .mobile-more,
+body:has(.modalback[style*="display: grid"]) .mobile-more,
+body:has(.modalback[style*="display:grid"]) .mobile-more,
+body:has(.modalback.show) .mobile-more,
+body:has(.modalback[aria-hidden="false"]) .mobile-more{display:none!important}
 }
 @media(min-width:701px){.mobile-nav,.mobile-more{display:none!important}}
