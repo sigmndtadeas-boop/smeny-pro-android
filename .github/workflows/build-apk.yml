@@ -59,19 +59,8 @@ jobs:
         working-directory: smeny_pro_mobile_build
         run: npx cap add android
 
-      - name: Configure stable debug signing key and app version
-        env:
-          SMENYPRO_DEBUG_KEYSTORE_BASE64: ${{ secrets.SMENYPRO_DEBUG_KEYSTORE_BASE64 }}
+      - name: Configure app version (temporary debug signing)
         run: |
-          if [ -z "$SMENYPRO_DEBUG_KEYSTORE_BASE64" ]; then
-            echo "Missing GitHub Actions secret: SMENYPRO_DEBUG_KEYSTORE_BASE64" >&2
-            exit 1
-          fi
-          mkdir -p "$HOME/.android"
-          printf '%s' "$SMENYPRO_DEBUG_KEYSTORE_BASE64" | base64 --decode > "$HOME/.android/debug.keystore"
-          cp "$HOME/.android/debug.keystore" smeny_pro_mobile_build/android/app/debug.keystore
-          chmod 600 "$HOME/.android/debug.keystore" smeny_pro_mobile_build/android/app/debug.keystore
-          keytool -list -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey >/dev/null
           python - <<'PY'
           from pathlib import Path
           import re
@@ -82,7 +71,7 @@ jobs:
           if code_count != 1 or name_count != 1:
               raise SystemExit("Could not set Android versionCode/versionName")
           p.write_text(s, encoding="utf-8")
-          print("Stable debug signing key installed; app version set to 1.1.0 (versionCode 2).")
+          print("App version set to 1.1.0 (versionCode 2). Gradle will use its generated debug key.")
           PY
 
       - name: Add Android Save As export support
