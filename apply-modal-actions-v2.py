@@ -85,6 +85,8 @@ css = r'''
 '''
 if "</head>" not in s:
     raise SystemExit("Cannot find </head>; refusing to insert modal styles.")
+if "Verze 1.0" in s:
+    s = s.replace("Verze 1.0", "Verze 1.1", 1)
 s = s.replace("</head>", css + "\n</head>", 1)
 p.write_text(s, encoding="utf-8")
 print("Modal actions now render in the header; JSON import and CSV/XLSX/JSON exports require explicit confirmation.")
