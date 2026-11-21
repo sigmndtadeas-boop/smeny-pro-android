@@ -93,9 +93,9 @@ function generateSchedule(){
  };
  const employeeShifts=e=>work.assignments.filter(a=>a.employeeId===e.id).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));
  const resolveSlot=(e,slot,date)=>{
-   const typed=(e.positions||[]).map(id=>work.positions.find(p=>p.id===id)).filter(p=>p&&(p.shiftType||'D')===slot.shiftType);
+   const typed=(e.positions||[]).map(id=>work.positions.find(p=>p.id===id)).filter(p=>p&&(!p.shiftType||p.shiftType===slot.shiftType));
    let pos=slot.positionId?work.positions.find(p=>p.id===slot.positionId):(slot.lead?typed.find(p=>p.lead):typed.find(p=>!p.lead)||typed[0]);
-   if(!pos&&!slot.positionId)pos=work.positions.find(p=>(p.shiftType||'D')===slot.shiftType&&(slot.lead?p.lead:!p.lead));
+   if(!pos&&!slot.positionId)pos=work.positions.find(p=>(!p.shiftType||p.shiftType===slot.shiftType)&&(slot.lead?p.lead:!p.lead));
    return {...slot,positionId:pos?.id||slot.positionId||null,target:shiftFor(date,slot.shiftType,pos?.id||slot.positionId)};
  };
  const eligible=(e,slot,date,chosen)=>{
@@ -106,7 +106,7 @@ function generateSchedule(){
    if(!Array.isArray(e.allowedDays)&&e.weekdays&&[0,6].includes(new Date(date+'T12:00:00').getDay()))return false;
    if(slot.lead&&!e.isLead&&!((e.positions||[]).some(id=>work.positions.some(p=>p.id===id&&p.lead))))return false;
    if(slot.positionId&&(e.positions||[]).length&&!(e.positions||[]).includes(slot.positionId))return false;
-   if(!slot.lead&&!slot.positionId&&(e.positions||[]).length&&!e.positions.some(id=>work.positions.some(p=>p.id===id&&!p.lead&&(p.shiftType||'D')===target.type)))return false;
+   if(!slot.lead&&!slot.positionId&&(e.positions||[]).length&&!e.positions.some(id=>work.positions.some(p=>p.id===id&&!p.lead&&(!p.shiftType||p.shiftType===target.type))))return false;
    if(chosen.some(a=>a.employeeId===e.id)||work.assignments.some(a=>a.employeeId===e.id&&a.date===date))return false;
    for(const pair of r.excludePairs||[]){
      if(pair.includes(e.id)){const other=pair.find(id=>id!==e.id);if(chosen.some(a=>a.employeeId===other)||work.assignments.some(a=>a.employeeId===other&&a.date===date))return false}
@@ -151,7 +151,7 @@ function generateSchedule(){
      let slots=[];
      if(rules.length)rules.forEach(rule=>{for(let i=0;i<Number(rule.count);i++)slots.push({positionId:rule.positionId})});
      else{
-       const leadPos=work.positions.find(p=>p.lead&&p.shiftType===type);
+       const leadPos=work.positions.find(p=>p.lead&&(!p.shiftType||p.shiftType===type));
        for(let i=0;i<count;i++)slots.push({positionId:i===0&&r.includeLead?leadPos?.id:null,lead:i===0&&!!r.includeLead});
      }
      if(slots.length!==count){issues.push(fmt(date)+' · '+(type==='D'?'Denní':'Noční')+': součet pozic ('+slots.length+') neodpovídá požadovanému počtu ('+count+').');continue}
