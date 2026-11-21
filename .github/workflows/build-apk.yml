@@ -77,14 +77,14 @@ jobs:
       - name: Add per-position shift types and working hours
         run: python apply-pro-phase8.py
 
-      - name: Upgrade planner with staged constraint solver
-        run: python apply-pro-phase9.py
-
       - name: Add safe legacy data migration and render recovery
         run: python apply-runtime-safety.py
 
       - name: Protect data-changing operations
         run: python apply-data-safety.py
+
+      - name: Upgrade planner with staged constraint solver
+        run: python apply-pro-phase9.py
 
       - name: Refresh compact mobile calendar
         run: python apply-calendar-ui.py
