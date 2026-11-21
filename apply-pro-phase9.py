@@ -92,17 +92,21 @@ function generateSchedule(){
    return {date,type:actualType,start:pos?.start||(actualType==='D'?r.dayStart:r.nightStart),end:pos?.end||(actualType==='D'?r.dayEnd:r.nightEnd),positionId};
  };
  const employeeShifts=e=>work.assignments.filter(a=>a.employeeId===e.id).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));
+ const resolveSlot=(e,slot,date)=>{
+   const typed=(e.positions||[]).map(id=>work.positions.find(p=>p.id===id)).filter(p=>p&&(p.shiftType||'D')===slot.shiftType);
+   let pos=slot.positionId?work.positions.find(p=>p.id===slot.positionId):(slot.lead?typed.find(p=>p.lead):typed.find(p=>!p.lead)||typed[0]);
+   if(!pos&&!slot.positionId)pos=work.positions.find(p=>(p.shiftType||'D')===slot.shiftType&&(slot.lead?p.lead:!p.lead));
+   return {...slot,positionId:pos?.id||slot.positionId||null,target:shiftFor(date,slot.shiftType,pos?.id||slot.positionId)};
+ };
  const eligible=(e,slot,date,chosen)=>{
    if(!e||e.active===false||unavailable(e,date))return false;
    const target=slot.target,k=dayKey(new Date(date+'T12:00:00'));
    if((e.onlyDay&&target.type==='N')||(e.onlyNight&&target.type==='D'))return false;
    if(Array.isArray(e.allowedDays)&&!e.allowedDays.includes(k))return false;
    if(!Array.isArray(e.allowedDays)&&e.weekdays&&[0,6].includes(new Date(date+'T12:00:00').getDay()))return false;
-   if(slot.positionId){
-     const pos=work.positions.find(p=>p.id===slot.positionId);
-     if((e.positions||[]).length&&!(e.positions||[]).includes(slot.positionId))return false;
-     if(pos?.lead&&!e.isLead&&!((e.positions||[]).some(id=>work.positions.some(p=>p.id===id&&p.lead))))return false;
-   }else if((e.positions||[]).length&&!e.positions.some(id=>work.positions.some(p=>p.id===id&&!p.lead)))return false;
+   if(slot.lead&&!e.isLead&&!((e.positions||[]).some(id=>work.positions.some(p=>p.id===id&&p.lead))))return false;
+   if(slot.positionId&&(e.positions||[]).length&&!(e.positions||[]).includes(slot.positionId))return false;
+   if(!slot.lead&&!slot.positionId&&(e.positions||[]).length&&!e.positions.some(id=>work.positions.some(p=>p.id===id&&!p.lead&&(p.shiftType||'D')===target.type)))return false;
    if(chosen.some(a=>a.employeeId===e.id)||work.assignments.some(a=>a.employeeId===e.id&&a.date===date))return false;
    for(const pair of r.excludePairs||[]){
      if(pair.includes(e.id)){const other=pair.find(id=>id!==e.id);if(chosen.some(a=>a.employeeId===other)||work.assignments.some(a=>a.employeeId===other&&a.date===date))return false}
@@ -147,8 +151,8 @@ function generateSchedule(){
      let slots=[];
      if(rules.length)rules.forEach(rule=>{for(let i=0;i<Number(rule.count);i++)slots.push({positionId:rule.positionId})});
      else{
-       const leadPos=work.positions.find(p=>p.lead&&p.shiftType===type)||work.positions.find(p=>p.lead);
-       for(let i=0;i<count;i++)slots.push({positionId:i===0&&r.includeLead?leadPos?.id:null});
+       const leadPos=work.positions.find(p=>p.lead&&p.shiftType===type);
+       for(let i=0;i<count;i++)slots.push({positionId:i===0&&r.includeLead?leadPos?.id:null,lead:i===0&&!!r.includeLead});
      }
      if(slots.length!==count){issues.push(fmt(date)+' · '+(type==='D'?'Denní':'Noční')+': součet pozic ('+slots.length+') neodpovídá požadovanému počtu ('+count+').');continue}
      const fixed=work.assignments.filter(a=>a.date===date&&a.type===type);
@@ -159,18 +163,18 @@ function generateSchedule(){
        if(idx<0)idx=slots.findIndex(x=>!x.filled);
        if(idx>=0)slots[idx].filled=true;
      }
-     slots.filter(x=>!x.filled).forEach(slot=>daySlots.push({...slot,target:shiftFor(date,type,slot.positionId)}));
+     slots.filter(x=>!x.filled).forEach(slot=>daySlots.push({...slot,shiftType:type,target:shiftFor(date,type,slot.positionId)}));
    }
    if(issues.some(x=>x.startsWith(fmt(date)+' ·')))continue;
-   const candidates=daySlots.map(slot=>({slot,list:employees.filter(e=>eligible(e,slot,date,[]))}));
+   const candidates=daySlots.map(slot=>({slot,list:employees.filter(e=>eligible(e,resolveSlot(e,slot,date),date,[]))}));
    candidates.sort((a,b)=>a.list.length-b.list.length);
    let nodes=0,solution=null;const chosen=[];
    const solve=depth=>{
      if(depth===candidates.length){solution=chosen.slice();return true}
      if(++nodes>60000)return false;
-     const item=candidates[depth],ranked=item.list.filter(e=>eligible(e,item.slot,date,chosen)).sort((a,b)=>score(a,item.slot.target.type,date)-score(b,item.slot.target.type,date)||a.name.localeCompare(b.name,'cs'));
-     for(const e of ranked){
-       const slot=item.slot,assignment={id:uid(),date,type:slot.target.type,employeeId:e.id,positionId:slot.positionId||e.positions?.find(id=>!work.positions.find(p=>p.id===id)?.lead)||e.positions?.[0]||work.positions.find(p=>!p.lead)?.id||work.positions[0]?.id,start:slot.target.start,end:slot.target.end,locked:false};
+     const item=candidates[depth],ranked=item.list.map(e=>({e,slot:resolveSlot(e,item.slot,date)})).filter(x=>eligible(x.e,x.slot,date,chosen)).sort((a,b)=>score(a.e,a.slot.shiftType,date)-score(b.e,b.slot.shiftType,date)||a.e.name.localeCompare(b.e.name,'cs'));
+     for(const candidate of ranked){
+       const e=candidate.e,slot=candidate.slot,assignment={id:uid(),date,type:slot.target.type,employeeId:e.id,positionId:slot.positionId||e.positions?.[0]||work.positions.find(p=>!p.lead)?.id||work.positions[0]?.id,start:slot.target.start,end:slot.target.end,locked:false};
        chosen.push(assignment);
        if(solve(depth+1))return true;
        chosen.pop();
